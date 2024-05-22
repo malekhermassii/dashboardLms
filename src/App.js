@@ -1,6 +1,7 @@
 
 import { BrowserRouter, Navigate, Routes, Route } from "react-router-dom";
 import LoginPage from "./pages/loginPage";
+<<<<<<< HEAD
 import Home from "./components/Home";
 import AddCourse from "./pages/add pages/addCourse" ;
 import AddUser from "./pages/add pages/addUser" ; 
@@ -30,12 +31,25 @@ import ViewTest from "./pages/view pages/viewTest";
 import UpdateTest from "./pages/update pages/updateTest";
 // view
 function App() {
+=======
+import SingleCourse from './pages/singleCourse';
+import ProfilePage from "./pages/profile";
+import TestCourse from "./pages/courseTest";
+import { useSelector } from "react-redux";
+
+import AllCourses from "./pages/allCourses"
+
+function App() {
+  // const mode = useSelector((state) => state.mode);
+  // const theme = useMemo(() => createTheme(themeSettings(mode)), [mode]);
+>>>>>>> origin/main
   const isVerified = Boolean(useSelector((state) => state.token));
   return (
     <div className="app">
       <BrowserRouter>
           <Routes>
             <Route path="/" element={<LoginPage />} />
+<<<<<<< HEAD
             <Route path="/home" element={isVerified ?<Home /> : <Navigate to="/" /> } />
             <Route path="/addUser" element={isVerified ?<AddUser /> : <Navigate to="/" /> } />
             <Route path="/addTest" element={isVerified ?<AddTest /> : <Navigate to="/" /> } />
@@ -63,6 +77,22 @@ function App() {
             <Route path="/ViewTest/:testId" element={isVerified ?<ViewTest /> : <Navigate to="/" /> } />
 
 
+=======
+            <Route path="/courses" element={isVerified ?<AllCourses /> : <Navigate to="/" /> } />
+            <Route path="/courses/:courseId" element={isVerified ?<SingleCourse /> :  <Navigate to="/" /> } />
+            <Route
+              path="/home"
+              element={isVerified ? <Home /> : <Navigate to="/" />}
+            />
+            <Route
+              path="/profile/:userId"
+              element={isVerified ? <ProfilePage /> : <Navigate to="/" />}
+            />
+            <Route
+              path="/tests/:courseId"
+              element={isVerified ? <TestCourse /> : <Navigate to="/" />}
+            />
+>>>>>>> origin/main
           </Routes>
       </BrowserRouter>
     </div>

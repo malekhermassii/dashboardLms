@@ -49,3 +49,9 @@ button.btn , .btn {
 i {
   color: #fbcc0d;
 }
+.singleImg{
+  width:20% !important;
+}
+.videoSingle{
+  height:300px !important;
+}
