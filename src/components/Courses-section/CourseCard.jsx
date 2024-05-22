@@ -1,33 +1,50 @@
-import React from "react";
+import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+
 const CourseCard = (props) => {
-  const { thumbnail, name, topic, description, feedback } = props.item;
+  const { _id, name, topic, description, feedback } = props.item;
+  const [course, setCourse] = useState(null);
+  
+  useEffect(() => {
+    const fetchCourse = async () => {
+      try {
+        const courseResponse = await fetch(`http://localhost:3002/courses/${_id}`);
+        if (!courseResponse.ok) throw new Error('Failed to fetch course');
+        const courseData = await courseResponse.json();
+        setCourse(courseData);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchCourse();
+  }, [_id]);
+  
   return (
-    <div className="single__course__item">
-      <div className="course__img">
-        <img src={thumbnail} alt="cover image" className="w-100" />
+    <div className="single__course__item shadow rounded-3 pt-5">
+      <div className="course__img d-flex justify-content-center ">
+        {course && course.image && (
+          <img height="100px"  src={`http://localhost:3002/images/${course.image}`} alt="cover image" className="w-75" />
+        )}
       </div>
       <div className="course__details">
-        {/* mb-4 : margin bottom  */}
         <h6 className="course__title mb-4">{name}</h6>
-        <div className=" d-flex justify-content-between align-items-center">
+        <div className="d-flex justify-content-between align-items-center">
           <p className="lesson d-flex align-items-center gap-1">
-            <i class="ri-book-open-line"></i> {topic} 
+            <i className="ri-book-open-line"></i> {topic} 
           </p>
-          {/* <p className="students d-flex align-items-center gap-1">
-            <i class="ri-user-line"></i> {description}
-          </p> */}
         </div>
-        <div className=" d-flex justify-content-between align-items-center">
+        <div className="d-flex justify-content-between align-items-center">
           <p className="rating d-flex align-items-center gap-1">
-            <i class="ri-star-fill"></i> {feedback}
+            <i className="ri-star-fill"></i> {feedback}
           </p>
           <p className="enroll d-flex align-items-center gap-1">
-            <a href="#"> Enroll Now</a>
+            <Link to={`/courses/${_id}`} className="btn">Enroll Now</Link>
           </p>
         </div>
       </div>
     </div>
   );
 };
+
 export default CourseCard;
-// courses container : content 

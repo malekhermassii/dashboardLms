@@ -9,39 +9,37 @@
 import { BrowserRouter, Navigate, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import LoginPage from "./pages/loginPage";
-// import ProfilePage from "scenes/profilePage";
-import { useMemo } from "react";
+import SingleCourse from './pages/singleCourse';
+import ProfilePage from "./pages/profile";
+import TestCourse from "./pages/courseTest";
 import { useSelector } from "react-redux";
-import { CssBaseline, ThemeProvider } from "@mui/material";
-import { createTheme } from "@mui/material/styles";
-import { themeSettings } from "./theme";
+
 import AllCourses from "./pages/allCourses"
 
 function App() {
-  const mode = useSelector((state) => state.mode);
-  const theme = useMemo(() => createTheme(themeSettings(mode)), [mode]);
+  // const mode = useSelector((state) => state.mode);
+  // const theme = useMemo(() => createTheme(themeSettings(mode)), [mode]);
   const isVerified = Boolean(useSelector((state) => state.token));
   return (
     <div className="app">
       <BrowserRouter>
-        <ThemeProvider theme={theme}> 
-       <CssBaseline />
           <Routes>
-            {/*  const handleNavigation = () => {
-    navigate('/courses');
-  }; */}
-            <Route path="/" element={<Home />} />
-            <Route path="/courses" element={<AllCourses />} />
+            <Route path="/" element={<LoginPage />} />
+            <Route path="/courses" element={isVerified ?<AllCourses /> : <Navigate to="/" /> } />
+            <Route path="/courses/:courseId" element={isVerified ?<SingleCourse /> :  <Navigate to="/" /> } />
             <Route
               path="/home"
               element={isVerified ? <Home /> : <Navigate to="/" />}
             />
-            {/* <Route
+            <Route
               path="/profile/:userId"
               element={isVerified ? <ProfilePage /> : <Navigate to="/" />}
-            /> */}
+            />
+            <Route
+              path="/tests/:courseId"
+              element={isVerified ? <TestCourse /> : <Navigate to="/" />}
+            />
           </Routes>
-        </ThemeProvider>
       </BrowserRouter>
     </div>
   );

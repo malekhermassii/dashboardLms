@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Container, Row, Col } from "reactstrap";
 import CourseCard from "../components/Courses-section/CourseCard";
 import "../components/Courses-section/courses.css";
+import Header from "../components/Header/Header"
+import Footer from "../components/Footer/Footer"
 
 const Courses = () => {
   const [courses, setCourses] = useState([]); // Stores the courses data
@@ -31,8 +33,9 @@ const Courses = () => {
   if (error) return <div>Error: {error}</div>;
 
   return (
-    <section id="courses">
-      <Container>
+    <section style={{paddingTop:"20px" , paddingBottom:0}}>
+      <Container style={{marginBottom: "100px"}}>
+      <Header/>
         <Row>
           <Col lg="12" className="mb-5">
             <div className="course__top d-flex justify-content-between align-items-center">
@@ -53,6 +56,7 @@ const Courses = () => {
           ))}
         </Row>
       </Container>
+      <Footer/>
    
       </section>
    );};

@@ -1,84 +1,65 @@
-// Import React and the useRef hook from the React library.
 import React, { useRef } from "react";
-// Import Container component from reactstrap to use for layout.
 import { Container } from "reactstrap";
-// Import specific CSS styles for this header component.
+import { Link } from "react-router-dom"; // Import Link from react-router-dom for routing.
 import "./header.css";
+import { useDispatch , useSelector} from 'react-redux';
+import { setLogout } from '../../state/index'; // Adjust path as necessary
+import { useNavigate } from 'react-router-dom';
 
-// Array of objects, each representing a navigation link with text and a link URL.
-const navLinks = [
-  {
-    display: "Home",
-    url: "#home",
-  },
-  {
-    display: "About",
-    url: "#about",
-  },
-  {
-    display: "Courses",
-    url: "#courses",
-  },
-  {
-    display: "profile",
-    url: "#profile",
-  },
-  {
-    display: "contact",
-    url: "#contact",
-  }
-];
-// DOM : 
-// Defines the Header component.
+
 const Header = () => {
-  // useRef hook is used to create a reference to the navigation menu HTML element.
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const menuRef = useRef();
-  // Function to toggle the 'active__menu' className on and off for the nav menu element.
+  const user = useSelector(state => {
+    console.log("Current Redux state:", state);
+    return state.user;
+  });
+
   const menuToggle = () => menuRef.current.classList.toggle("active__menu");
-  // The return statement includes JSX that describes the component's UI.
+
+  const handleLogout = async () => {
+    // Call the logout endpoint
+    const response = await fetch('http://localhost:3002/logout', { method: 'GET' });
+    if (response.ok) {
+      // Clear user state in Redux
+      alert("logout successfully")
+      dispatch(setLogout());
+
+      // Redirect to login page
+      navigate("/");
+    } else {
+      alert("Failed to log out. Please try again.");
+    }
+  };
+
+ 
   return (
-    // The header tag is used as the root element of the header component.
     <header className="header">
-      {/* // Container from reactstrap provides a responsive fixed width container. */}
       <Container>
-        {/* // Flexbox container to align logo and navigation items properly. */}
         <div className="d-flex align-items-center justify-content-between">
-          {/* // Logo section. */}
           <div className="logo">
-            <h2 className="align-items-center gap-1">
-              {/* // Icon from RemixIcon library followed by the brand name. */}
+            <h2>
+              <Link to="/home" style={{ textDecoration: "none", color: "#0a2b1e" }}>
               <i className="ri-pantone-line"></i> Rouem.
+                </Link>
             </h2>
           </div>
-          {/* // Navigation section contains navigation links and login button. */}
           <div className="nav d-flex align-items-center gap-5">
-            {/* gap : margin */}
-            {/* // Navigation menu which can  toggled by clicking, reference attached here. */}
             <div className="nav__menu" ref={menuRef} onClick={menuToggle}>
-              {/* // Unordered list for navigation links. */}
               <ul className="nav__list">
-                {/* // Mapping navLinks array to list items. */}
-                {navLinks.map((item, index) => (
-                  // List item for each link. The 'key' prop is essential for React list rendering.
-                  <li key={index} className="nav__item">
-                    {/* // Anchor tag for navigation; 'href' points to an internal link. */}
-                    <a href={item.url}>{item.display}</a>
-                  </li>
-                ))}
+                <li className="nav__item"><Link to="/home">Home</Link></li>
+                <li className="nav__item"><Link to="/about">About</Link></li>
+                <li className="nav__item"><Link to="/courses">Courses</Link></li>
+                <li className="nav__item"><Link to="/contact">Contact</Link></li>
+                {user?._id && <li className="nav__item"><Link to={`/profile/${user._id}`} className="profile">Profile</Link></li>}
+
               </ul>
             </div>
-            {/* // Contains additional navigation or action items like the login button. */}
-            <div className="nav__right">
-              <p className="mb-0 d-flex align-items-center gap-2">
-                {/* // Button styled with Bootstrap classes for login action. */}
-                <button className="btn">Log In</button>
-              </p>
-            </div>
+            <button className="btn" onClick={handleLogout}>Logout</button>
           </div>
-          {/* // Mobile menu icon that shows only in mobile view to toggle the menu. */}
           <div className="mobile__menu">
             <span>
-              {/* // Clickable icon for expanding the mobile navigation menu. */}
               <i className="ri-menu-line" onClick={menuToggle}></i>
             </span>
           </div>
@@ -87,5 +68,7 @@ const Header = () => {
     </header>
   );
 };
-// Exports the Header component so it can be used in other parts of the application.
+
+
+
 export default Header;

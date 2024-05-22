@@ -42,7 +42,16 @@ button.btn , .btn {
   padding: 7px 25px;
   border-radius: 50px;
 }
-
+#uploadBtn:hover{
+  background: #bd9907;
+  color: #fff;
+}
 i {
   color: #fbcc0d;
+}
+.singleImg{
+  width:20% !important;
+}
+.videoSingle{
+  height:300px !important;
 }

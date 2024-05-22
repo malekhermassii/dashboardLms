@@ -1,23 +1,17 @@
+// Importing necessary libraries and components
 import { useState } from "react";
-import {
-  Box,
-  Button,
-  TextField,
-  useMediaQuery,
-  Typography,
-  useTheme,
-} from "@mui/material";
-
+import { Box, Button, TextField, useMediaQuery, Typography, useTheme } from "@mui/material";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
-import { Formik } from "formik";
-import * as yup from "yup";
-import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { setLogin } from "../../state/index";
-import Dropzone from "react-dropzone";
+import { Formik } from "formik"; // For handling form state and submission
+import * as yup from "yup"; // For schema validation of form inputs
+import { useNavigate } from "react-router-dom"; // To programmatically navigate to other routes
+import { useDispatch } from "react-redux"; // To dispatch Redux actions
+import { setLogin } from "../../state/index"; // Action to set login state in Redux
+import Dropzone from "react-dropzone"; // Component for drag and drop file upload
 
+// Defining form validation schema using Yup
 const registerSchema = yup.object().shape({
-  name: yup.string().required("required"),
+  name: yup.string().required("required "),
   email: yup.string().email("invalid email").required("required"),
   password: yup.string().required("required"),
   image: yup.string().required("required"),
@@ -28,6 +22,7 @@ const loginSchema = yup.object().shape({
   password: yup.string().required("required"),
 });
 
+// Initial form values for the register form
 const initialValuesRegister = {
   name: "",
   email: "",
@@ -35,92 +30,80 @@ const initialValuesRegister = {
   image: null,
 };
 
+// Initial form values for the login form
 const initialValuesLogin = {
   email: "",
   password: "",
 };
 
+// Functional component for the Form
 const Form = () => {
-  const [pageType, setPageType] = useState("login");
-  const { palette } = useTheme();
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const isNonMobile = useMediaQuery("(min-width:600px)");
-  const isLogin = pageType === "login";
-  const isRegister = pageType === "register";
+  const [pageType, setPageType] = useState("login"); // Local state to toggle between login and register
+  const dispatch = useDispatch(); // Redux's dispatch function
+  const navigate = useNavigate(); // Hook for navigation
+  const isNonMobile = useMediaQuery("(min-width:600px)"); // Check for non-mobile screen width
+  const isLogin = pageType === "login"; // Boolean to check if current form is login
+  const isRegister = pageType === "register"; // Boolean to check if current form is register
 
+  // Function to handle registration process
   const register = async (values, onSubmitProps) => {
-    const formData = new FormData();
+    const formData = new FormData(); // Form data object to handle file upload
     for (let key in values) {
-        if (key === 'image' && values[key]) {
-            // Append the image file if it exists
-            formData.append('image', values.image, values.image.name);
-        } else {
-            // Append other values as text
-            formData.append(key, values[key]);
-        }
+      if (key === 'image' && values[key]) {
+        formData.append('image', values.image, values.image.name); // Append image file to form data
+      } else {
+        formData.append(key, values[key]); // Append other form values
+      }
     }
-
     const savedUserResponse = await fetch(
-        "http://localhost:3002/students",
-        {
-            method: "POST",
-            body: formData,
-            headers: {
-                'Accept': 'application/json',
-                // Do not set 'Content-Type' here; FormData sets it automatically including the boundary parameter
-            },
-        }
+      "http://localhost:3002/users", {
+        method: "POST",
+        body: formData, // Send form data
+        headers: {
+          'Accept': 'application/json',
+        },
+      }
     );
     const savedUser = await savedUserResponse.json();
-    onSubmitProps.resetForm();
+    onSubmitProps.resetForm(); // Reset form after submission
 
     if (savedUser) {
-        setPageType("login");
+      setPageType("login"); // Switch to login after registration
     }
-};
+  };
 
-
+  // Function to handle login process
   const login = async (values, onSubmitProps) => {
-    const loggedInResponse = await fetch("http://localhost:3002/login", {
+    const response = await fetch("http://localhost:3002/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(values),
     });
-    const loggedIn = await loggedInResponse.json();
+    const result = await response.json();
     onSubmitProps.resetForm();
-    if (loggedIn) {
-      dispatch(
-        setLogin({
-          user: loggedIn.user,
-          token: loggedIn.token,
-        })
-      );
-      navigate("/home");
+    if (response.ok) {
+      alert("login successfully")
+      dispatch(setLogin({ user: result.user, token: result.token }));
+      navigate("/home"); // Navigate to home on successful login
+    } else {
+      alert(result.message); // Show error message on failure
     }
   };
 
+  // Function to decide which form submission handler to use
   const handleFormSubmit = async (values, onSubmitProps) => {
     if (isLogin) await login(values, onSubmitProps);
     if (isRegister) await register(values, onSubmitProps);
   };
 
+  // Form component structure using Formik for form handling
   return (
     <Formik
       onSubmit={handleFormSubmit}
       initialValues={isLogin ? initialValuesLogin : initialValuesRegister}
       validationSchema={isLogin ? loginSchema : registerSchema}
     >
-      {({
-        values,
-        errors,
-        touched,
-        handleBlur,
-        handleChange,
-        handleSubmit,
-        setFieldValue,
-        resetForm,
-      }) => (
+      {({values,errors,handleBlur,handleChange,handleSubmit,setFieldValue,resetForm,})=> (
         <form onSubmit={handleSubmit}>
           <Box
             display="grid"
@@ -130,6 +113,7 @@ const Form = () => {
               "& > div": { gridColumn: isNonMobile ? undefined : "span 4" },
             }}
           >
+            {/* Conditional rendering for register form fields */}
             {isRegister && (
               <>
                 <TextField
@@ -138,16 +122,14 @@ const Form = () => {
                   onChange={handleChange}
                   value={values.name}
                   name="name"
-                  error={
-                    Boolean(touched.name) && Boolean(errors.name)
-                  }
-                  helperText={touched.name && errors.name}
+                  error={ Boolean(errors.name)}
+                  helperText={ errors.name}
                   sx={{ gridColumn: "span 4" }}
                 />
               
                 <Box
                   gridColumn="span 4"
-                  border={`1px solid ${palette.neutral.medium}`}
+                  border={`1px solid #A3A3A3`}
                   borderRadius="5px"
                   p="1rem"
                 >
@@ -158,6 +140,9 @@ const Form = () => {
                       setFieldValue("image", acceptedFiles[0])
                     }
                   >
+                    {/* getRootProps: A method that provides properties required to make the wrapping element (<Box> in this case) behave as a dropzone. This includes event handlers that manage the drag-and-drop functionality. */}
+                    
+                    {/* This is a method provided by the react-dropzone library. When called, it returns an object containing properties like type and event handlers that are necessary for the <input> element */}
                     {({ getRootProps, getInputProps }) => (
                       <Box
                         {...getRootProps()}
@@ -182,14 +167,15 @@ const Form = () => {
               </>
             )}
 
+            {/* Email and password fields common to both forms */}
             <TextField
               label="Email"
               onBlur={handleBlur}
               onChange={handleChange}
               value={values.email}
               name="email"
-              error={Boolean(touched.email) && Boolean(errors.email)}
-              helperText={touched.email && errors.email}
+              error={ Boolean(errors.email)}
+              helperText={ errors.email}
               sx={{ gridColumn: "span 4" }}
             />
             <TextField
@@ -199,13 +185,13 @@ const Form = () => {
               onChange={handleChange}
               value={values.password}
               name="password"
-              error={Boolean(touched.password) && Boolean(errors.password)}
-              helperText={touched.password && errors.password}
+              error={ Boolean(errors.password)}
+              helperText={ errors.password}
               sx={{ gridColumn: "span 4" }}
             />
           </Box>
 
-          {/* BUTTONS */}
+          {/* Form submission buttons */}
           <Box>
             <Button
               fullWidth
@@ -214,7 +200,7 @@ const Form = () => {
                 m: "2rem 0",
                 p: "1rem",
                 backgroundColor: "#ffd21f",
-                color: palette.background.alt,
+                color:"#FFFFFF",
                 "&:hover": { color: "#ffd21f" },
               }}
             >
@@ -245,4 +231,4 @@ const Form = () => {
   );
 };
 
-export default Form;
+export default Form; // Exports the Form component for use elsewhere in the app
