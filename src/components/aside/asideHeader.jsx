@@ -9,6 +9,7 @@ function Sidebar({ openSidebarToggle, OpenSidebar }) {
   const [showFeedbacksDropdown, setShowFeedbacksDropdown] = useState(false);
   const [showUsersDropdown, setShowUsersDropdown] = useState(false);
   const [showTestsDropdown, setShowTestsDropdown] = useState(false);
+  const [showTeachersDropdown, setShowTeachersDropdown] = useState(false);
 
   return (
     <aside id="sidebar" className={openSidebarToggle ? "sidebar-responsive" : ""}>
@@ -33,6 +34,25 @@ function Sidebar({ openSidebarToggle, OpenSidebar }) {
                 </li>
                 <li className='linkContainer'>
                 <Link className='link' to="/adminsList">Admins List</Link>
+                </li>
+                
+                
+              </ul>
+            )}
+          </div>
+        </li>
+        <li className='sidebar-list-item'>
+          <div className="dropdown">
+            <p onClick={() => setShowTeachersDropdown(!showTeachersDropdown)}>
+              Teachers
+            </p>
+            {showTeachersDropdown && (
+              <ul className="dropdown-content">
+                <li className='linkContainer'>
+                <Link className='link' to="/addTeacher"> Add Teacher </Link>
+                </li>
+                <li className='linkContainer'>
+                <Link className='link' to="/teachersList">Teachers List</Link>
                 </li>
                 
                 
